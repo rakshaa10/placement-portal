@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String @unique
+  password String
+  role     String
+
+  createdAt   DateTime     @default(now())
+  experiences Experience[]
+}
+
+model Company {
+  id                  Int          @id @default(autoincrement())
+  name                String
+  role                String
+  employment_type     String
+  eligibility         String
+  cgpa_cutoff         String
+  company_description String?
+  experiences         Experience[]
+}
+
+model Experience {
+  id Int @id @default(autoincrement())
+
+  company_id Int
+  user_id    Int
+
+  title String
+
+  result         String?
+  interview_mode String?
+
+  overall_experience String?
+  general_advice     String?
+
+  created_at DateTime @default(now())
+
+  company Company @relation(fields: [company_id], references: [id])
+
+  user User @relation(fields: [user_id], references: [id])
+
+  rounds Round[]
+}
+
+model Round {
+  id Int @id @default(autoincrement())
+
+  experience_id Int
+
+  round_number Int
+  round_type   String
+
+  duration String?
+
+  overview String?
+
+  experience Experience @relation(fields: [experience_id], references: [id])
+
+  questions Question[]
+}
+
+model Question {
+  id Int @id @default(autoincrement())
+
+  round_id Int
+
+  question_text String
+
+  round Round @relation(fields: [round_id], references: [id])
+}
+
