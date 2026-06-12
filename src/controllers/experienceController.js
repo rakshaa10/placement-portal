@@ -4,7 +4,6 @@ const createExperience = async (req, res) => {
   try {
     const {
       company_id,
-      user_id,
       title,
       result,
       interview_mode,
@@ -15,7 +14,7 @@ const createExperience = async (req, res) => {
     const experience = await prisma.experience.create({
       data: {
         company_id,
-        user_id,
+        user_id: req.user.id,
         title,
         result,
         interview_mode,
@@ -23,7 +22,7 @@ const createExperience = async (req, res) => {
         general_advice,
       },
     });
-
+    
     res.status(201).json(experience);
   } catch (error) {
     console.error(error);
