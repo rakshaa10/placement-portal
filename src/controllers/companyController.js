@@ -2,7 +2,28 @@ const prisma = require("../config/prisma");
 
 const getAllCompanies = async (req, res) => {
   try {
-    const companies = await prisma.company.findMany();
+    const { search } = req.query;
+
+    const companies = await prisma.company.findMany({
+      where: search
+        ? {
+            OR: [
+              {
+                name: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+              {
+                role: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+            ],
+          }
+        : {},
+    });
 
     res.status(200).json(companies);
   } catch (error) {
@@ -134,19 +155,45 @@ const getCompanyFullDetails = async (req, res) => {
       where: {
         id: Number(id),
       },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        role: true,
+        employment_type: true,
+        eligibility: true,
+        cgpa_cutoff: true,
+        company_description: true,
+
         experiences: {
-          include: {
+          select: {
+            id: true,
+            title: true,
+            result: true,
+            interview_mode: true,
+            overall_experience: true,
+            general_advice: true,
+
             rounds: {
-              include: {
-                questions: true,
+              select: {
+                id: true,
+                round_number: true,
+                round_type: true,
+                duration: true,
+                overview: true,
+
+                questions: {
+                  select: {
+                    id: true,
+                    question_text: true,
+                  },
+                },
               },
             },
           },
         },
       },
     });
-
+    
     if (!company) {
       return res.status(404).json({
         message: "Company not found",
