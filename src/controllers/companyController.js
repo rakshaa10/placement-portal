@@ -126,11 +126,47 @@ const deleteCompany = async (req, res) => {
     });
   }
 };
+const getCompanyFullDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    const company = await prisma.company.findUnique({
+      where: {
+        id: Number(id),
+      },
+      include: {
+        experiences: {
+          include: {
+            rounds: {
+              include: {
+                questions: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!company) {
+      return res.status(404).json({
+        message: "Company not found",
+      });
+    }
+
+    res.status(200).json(company);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
 module.exports = {
   getAllCompanies,
   createCompany,
   getCompanyById,
+  getCompanyFullDetails,
   updateCompany,
   deleteCompany,
 };

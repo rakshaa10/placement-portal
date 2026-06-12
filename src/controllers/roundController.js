@@ -47,6 +47,9 @@ const getRoundsByExperience = async (req, res) => {
       where: {
         experience_id: Number(experienceId),
       },
+      include: {
+        questions: true,
+      },
     });
 
     res.status(200).json(rounds);

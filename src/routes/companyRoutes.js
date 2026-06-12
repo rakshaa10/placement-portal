@@ -7,6 +7,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 const {
   getAllCompanies,
   createCompany,
+  getCompanyFullDetails,
   getCompanyById,
   updateCompany,
   deleteCompany,
@@ -15,6 +16,8 @@ const {
 router.get("/", getAllCompanies);
 
 router.post("/", authMiddleware, createCompany);
+
+router.get("/:id/full", getCompanyFullDetails);
 
 router.get("/:id", getCompanyById);
 

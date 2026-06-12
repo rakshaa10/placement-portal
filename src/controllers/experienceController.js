@@ -36,8 +36,19 @@ const createExperience = async (req, res) => {
 
 const getAllExperiences = async (req, res) => {
   try {
-    const experiences = await prisma.experience.findMany();
-
+    const experiences = await prisma.experience.findMany({
+      include: {
+        company: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+          },
+        },
+      },
+    });
     res.status(200).json(experiences);
   } catch (error) {
     console.error(error);
